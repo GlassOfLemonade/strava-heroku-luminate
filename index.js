@@ -2,14 +2,34 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dbConfig = require('./config');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const { body, check } = require('express-validator');
 
 const app = express();
 const port = 3000;
 
+/* USE setup */
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true
+  })
+);
+app.use(
+  cors({
+    origin: dbConfig.isProduction
+      ? 'https://cf-strava-luminate.herokuapp.com'
+      : '*'
+  })
+);
+app.use(compression());
+app.use(helmet());
+app.use(
+  rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 min
+    max: 500 // 500 times per min
   })
 );
 

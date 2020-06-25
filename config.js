@@ -59,4 +59,9 @@ const receiveWebhook = (request, response) => {
   response.status(200).end();
 };
 
-module.exports = { getActivitiesByCons, postInteraction, receiveWebhook };
+module.exports = {
+  isProduction,
+  getActivitiesByCons,
+  postInteraction,
+  receiveWebhook
+};
