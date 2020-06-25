@@ -1,0 +1,14 @@
+CREATE TABLE activities
+(
+  ID SERIAL PRIMARY KEY,
+  cons_id VARCHAR(255) NOT NULL,
+  info json NOT NULL
+);
+
+CREATE TABLE users
+(
+  ID SERIAL PRIMARY KEY,
+  cons_id VARCHAR(255) NOT NULL,
+  strava_id VARCHAR(255) NOT NULL
+);
+
