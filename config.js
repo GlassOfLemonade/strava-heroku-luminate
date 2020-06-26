@@ -57,7 +57,7 @@ const receiveWebhook = (request, response) => {
   // TODO: do something with the data
   console.log(webhook);
   // confirm with webhook source
-  response.status(200);
+  response.status(200).end();
   // if update authorized: false is present, refresh token
 };
 
