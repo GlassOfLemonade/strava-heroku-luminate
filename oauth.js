@@ -29,11 +29,11 @@ const oAuthHandler = (request, response) => {
         'INSERT INTO users (cons_id, strava_id, token_type, refresh_token, access_token, expires_at) VALUES ($1, $2, $3, $4, $5, $6)',
         [
           cons_id,
-          data.response.athlete.id,
-          data.response.token_type,
-          data.response.refresh_token,
-          data.response.access_token,
-          data.response.expires_at
+          response.data.athlete.id,
+          response.data.token_type,
+          response.data.refresh_token,
+          response.data.access_token,
+          response.data.expires_at
         ],
         error => {
           if (error) {
