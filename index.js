@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dbConfig = require('./config');
+const oAuth = require('./oauth');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
@@ -65,11 +66,13 @@ app.get('/webhook', (req, res) => {
 /* POST handlers */
 // webhook
 app.post('/webhook', dbConfig.receiveWebhook);
+// oauth
+app.post('/oauth', oAuth.oAuthHandler);
 
 /* PUT handlers */
 
 /* There are no DELETE calls */
 
 app.listen(process.env.PORT || port, () => {
-  console.log(`App running on port ${port}.`);
+  console.log(`App running on port ${process.env.PORT}.`);
 });

@@ -36,6 +36,7 @@ const getActivitiesByCons = (request, response) => {
  */
 const postInteraction = (request, response) => {
   const { info } = request.body;
+  // TODO: revamp this function to include cons_id from request params
 
   pool.query('INSERT INTO activities (info) VALUES ($1)', [info], error => {
     if (error) {
@@ -56,12 +57,14 @@ const receiveWebhook = (request, response) => {
   // TODO: do something with the data
   console.log(webhook);
   // confirm with webhook source
-  response.status(200).end();
+  response.status(200);
+  // if update authorized: false is present, refresh token
 };
 
 module.exports = {
   isProduction,
   getActivitiesByCons,
   postInteraction,
-  receiveWebhook
+  receiveWebhook,
+  pool
 };
