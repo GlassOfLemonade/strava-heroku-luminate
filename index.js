@@ -62,12 +62,14 @@ app.get('/webhook', (req, res) => {
     }
   }
 });
+// oauth
+app.get('/oauth', oAuth.oAuthHandler);
 
 /* POST handlers */
 // webhook
 app.post('/webhook', dbConfig.receiveWebhook);
 // oauth
-app.post('/oauth', oAuth.oAuthHandler);
+app.get('/oauth', oAuth.oAuthHandler);
 
 /* PUT handlers */
 
