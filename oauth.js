@@ -24,6 +24,7 @@ const oAuthHandler = (request, response) => {
     .post(tokenExUrl)
     .then(function(response) {
       // make entry to database user table
+      console.log(response);
       dbConfig.pool.query(
         'INSERT INTO users (cons_id, strava_id, token_type, refresh_token, access_token, expires_at) VALUES ($1, $2, $3, $4, $5, $6)',
         [
