@@ -12,7 +12,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-const proxy = process.env.QUOTAGUARDSTATIC_URL;
+const proxy = process.env.QUOTAGUARDSHIELD_URL;
 const agent = new httpProxyAgent(proxy);
 
 /* Query Functions */
