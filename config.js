@@ -124,7 +124,7 @@ const receiveWebhook = (request, response) => {
     promiseQuery.then(results => {
       // call API on get activity to get activity data
       //console.log(results);
-      console.log('access token: ' + results[0]);
+      //console.log('access token: ' + results[0]);
       const activity_url =
         'https://www.strava.com/api/v3/activities/' +
         activity_id +
@@ -136,7 +136,7 @@ const receiveWebhook = (request, response) => {
         .get(activity_url, { headers: headers })
         .then(response => {
           // once activity data is obtained, call logInteraction on LO to save data
-          console.log(response);
+          //console.log(response);
           const logInteractionUrl =
             'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
             '&login_name=' +
@@ -148,7 +148,7 @@ const receiveWebhook = (request, response) => {
 
           const reqBody = {
             interaction_subject: '2020_Strava',
-            interaction_body: response,
+            interaction_body: JSON.stringify(response),
             interaction_type_id: '1030'
           };
           axios
