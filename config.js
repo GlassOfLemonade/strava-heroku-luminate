@@ -98,7 +98,7 @@ const receiveWebhook = (request, response) => {
               '&' +
               'code=' +
               results.rows[0]['refresh_token'];
-            await axios
+            axios
               .post(tokenReUrl)
               .then(function(response) {
                 await pool.query(
