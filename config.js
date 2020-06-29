@@ -160,7 +160,7 @@ const receiveWebhook = (request, response) => {
             interaction_type_id: '1030'
           };
           axios
-            .post(logInteractionUrl, config, reqBody)
+            .post(logInteractionUrl, reqBody, config)
             .then(response => {
               console.log(response);
             })
