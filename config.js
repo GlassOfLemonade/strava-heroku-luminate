@@ -139,7 +139,7 @@ const receiveWebhook = (request, response) => {
         activity_id +
         '?include_all_efforts=false';
       const headers = {
-        Authorization: 'Bearer ' + accessToken
+        Authorization: String(tokenType) + ' ' + String(accessToken)
       };
       axios
         .get(activity_url, { headers: headers })
