@@ -96,7 +96,7 @@ const receiveWebhook = (request, response) => {
                 '&' +
                 'grant_type=refresh_token' +
                 '&' +
-                'code=' +
+                'refresh_token=' +
                 results.rows[0]['refresh_token'];
               axios
                 .post(tokenReUrl)
