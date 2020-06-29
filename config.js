@@ -141,7 +141,7 @@ const receiveWebhook = (request, response) => {
         .get(activity_url, { headers: headers })
         .then(response => {
           // once activity data is obtained, call logInteraction on LO to save data
-          //console.log(response);
+          console.log(response);
           // carve out a subset of data from response
           const shortResp = {
             athlete_id: response.athlete.id,
