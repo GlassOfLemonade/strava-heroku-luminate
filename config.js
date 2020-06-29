@@ -140,9 +140,9 @@ const receiveWebhook = (request, response) => {
           const logInteractionUrl =
             'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
             '&login_name=' +
-            env.process.LO_API_USER +
+            process.env.LO_API_USER +
             '&login_pass=' +
-            env.process.LO_API_PASS +
+            process.env.LO_API_PASS +
             '&cons_id=' +
             consId;
 
