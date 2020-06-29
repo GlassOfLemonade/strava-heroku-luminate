@@ -148,7 +148,7 @@ const receiveWebhook = (request, response) => {
 
           const reqBody = {
             interaction_subject: '2020_Strava',
-            interaction_body: JSON.stringify(response),
+            interaction_body: JSON.stringify(response.data),
             interaction_type_id: '1030'
           };
           axios
