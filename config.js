@@ -116,7 +116,7 @@ const receiveWebhook = (request, response) => {
                     console.log(athlete_id + ' updated in database.');
                     accessToken = response.data.accessToken;
                     tokenType = response.data.token_type;
-                    resolve([accessToken, tokenReUrl]);
+                    resolve([accessToken, tokenType]);
                   }
                 );
               })
@@ -127,7 +127,7 @@ const receiveWebhook = (request, response) => {
             tokenType = results.rows[0]['token_type'];
             accessToken = results.rows[0]['access_token'];
             console.log('accessToken: ' + accessToken);
-            resolve([accessToken, tokenReUrl]);
+            resolve([accessToken, tokenType]);
           }
         }
       );
