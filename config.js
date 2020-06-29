@@ -157,7 +157,7 @@ const receiveWebhook = (request, response) => {
               console.log(response);
             })
             .catch(error => {
-              console.log(error);
+              console.log('error found: ' + error);
             });
         })
         .catch(error => {
