@@ -165,7 +165,8 @@ const receiveWebhook = (request, response) => {
               console.log(response);
             })
             .catch(error => {
-              console.log(error);
+              console.log('error from log interaction call: ');
+              console.log(error.data.errorResponse);
             });
         })
         .catch(error => {
