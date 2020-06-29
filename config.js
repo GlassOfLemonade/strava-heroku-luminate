@@ -110,6 +110,7 @@ const receiveWebhook = (request, response) => {
                     accessToken = response.data.accessToken;
                     tokenType = response.data.token_type;
                     resolve([accessToken, tokenType]);
+                    console.log('access token sent: ' + accessToken);
                   }
                 );
               })
@@ -128,7 +129,7 @@ const receiveWebhook = (request, response) => {
     promiseQuery.then(results => {
       // call API on get activity to get activity data
       //console.log(results);
-      //console.log('access token: ' + results[0]);
+      console.log('access token received: ' + results[0]);
       const activity_url =
         'https://www.strava.com/api/v3/activities/' +
         activity_id +
