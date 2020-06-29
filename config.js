@@ -66,9 +66,9 @@ const receiveWebhook = (request, response) => {
     // if new activity, call strava back with Get Activity
     const athlete_id = webhook['owner_id'];
     const activity_id = webhook['object_id'];
-    const accessToken;
-    const tokenType;
-    const consId;
+    let accessToken;
+    let tokenType;
+    let consId;
     // TODO: if token expired then refresh
     const promiseQuery =  new Promise((resolve, reject) => {
       resolve(
