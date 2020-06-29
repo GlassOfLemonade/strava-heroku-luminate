@@ -81,7 +81,7 @@ const receiveWebhook = (request, response) => {
             }
             console.log(results);
             const time_now = new Date(Date.now()) / 1000; // time in seconds
-            //console.log(time_now);
+            console.log(time_now);
             // save cons_id
             consId = results.rows[0]['cons_id'];
             if (time_now > results.rows[0]['expires_at']) {
@@ -127,6 +127,7 @@ const receiveWebhook = (request, response) => {
               tokenType = results.rows[0]['token_type'];
               accessToken = results.rows[0]['access_token'];
             }
+            console.log('access token: ' + accessToken);
           }
         )
       );
