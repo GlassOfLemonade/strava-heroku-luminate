@@ -81,6 +81,7 @@ const receiveWebhook = (request, response) => {
             }
             console.log(results);
             const time_now = new Date(Date.now()) / 1000; // time in seconds
+            console.log(time_now);
             // save cons_id
             consId = results.rows[0]['cons_id'];
             if (time_now > results.rows[0]['expires_at']) {
@@ -100,8 +101,8 @@ const receiveWebhook = (request, response) => {
                 results.rows[0]['refresh_token'];
               axios
                 .post(tokenReUrl)
-                .then(async function(response) {
-                  await pool.query(
+                .then(function(response) {
+                  pool.query(
                     'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
                     [
                       response.data.token_type,
@@ -113,7 +114,7 @@ const receiveWebhook = (request, response) => {
                       if (error) {
                         throw error;
                       }
-                      console.log(athlete_id + 'updated in database.');
+                      console.log(athlete_id + ' updated in database.');
                       accessToken = response.data.accessToken;
                       tokenType = response.data.token_type;
                     }
