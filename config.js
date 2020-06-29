@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const { Pool } = require('pg');
+const httpProxyAgent = require('http-proxy-agent');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -10,6 +11,9 @@ const pool = new Pool({
   connectionString: isProduction ? process.env.DATABASE_URL : connectionString,
   ssl: { rejectUnauthorized: false }
 });
+
+const proxy = process.env.QUOTAGUARDSTATIC_URL;
+const agent = new httpProxyAgent(proxy);
 
 /* Query Functions */
 
@@ -145,19 +149,22 @@ const receiveWebhook = (request, response) => {
             process.env.LO_API_PASS +
             '&cons_id=' +
             consId;
-
+          const config = {
+            httpsAgent: agent,
+            httpsAgent: agent
+          };
           const reqBody = {
             interaction_subject: '2020_Strava',
             interaction_body: JSON.stringify(response.data),
             interaction_type_id: '1030'
           };
           axios
-            .post(logInteractionUrl, reqBody)
+            .post(logInteractionUrl, config, reqBody)
             .then(response => {
               console.log(response);
             })
             .catch(error => {
-              console.log('error found: ' + error);
+              console.log(error);
             });
         })
         .catch(error => {
