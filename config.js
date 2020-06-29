@@ -70,7 +70,7 @@ const receiveWebhook = (request, response) => {
     let tokenType;
     let consId;
     // TODO: if token expired then refresh
-    const promiseQuery =  new Promise((resolve, reject) => {
+    const promiseQuery = new Promise((resolve, reject) => {
       resolve(
         pool.query(
           'SELECT * FROM users WHERE strava_id = $1',
@@ -85,76 +85,84 @@ const receiveWebhook = (request, response) => {
             consId = results.rows[0]['cons_id'];
             if (time_now > results.rows[0]['expires_at']) {
               // token has expired, call a refresh
-            console.log('refreshing token...');
-            const tokenReUrl =
-              'https://www.strava.com/api/v3/oauth/token?' +
-              'client_id=' +
-              process.env.CLIENT_ID +
-              '&' +
-              'client_secret=' +
-              process.env.CLIENT_SECRET +
-              '&' +
-              'grant_type=refresh_token' +
-              '&' +
-              'code=' +
-              results.rows[0]['refresh_token'];
-            axios
-              .post(tokenReUrl)
-              .then(function(response) {
-                await pool.query(
-                  'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
-                  [
-                    response.data.token_type,
-                    response.data.refresh_token,
-                    response.data.access_token,
-                    response.data.expires_at
-                  ],
-                  error => {
-                    if (error) {
-                      throw error;
+              console.log('refreshing token...');
+              const tokenReUrl =
+                'https://www.strava.com/api/v3/oauth/token?' +
+                'client_id=' +
+                process.env.CLIENT_ID +
+                '&' +
+                'client_secret=' +
+                process.env.CLIENT_SECRET +
+                '&' +
+                'grant_type=refresh_token' +
+                '&' +
+                'code=' +
+                results.rows[0]['refresh_token'];
+              axios
+                .post(tokenReUrl)
+                .then(async function(response) {
+                  await pool.query(
+                    'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
+                    [
+                      response.data.token_type,
+                      response.data.refresh_token,
+                      response.data.access_token,
+                      response.data.expires_at
+                    ],
+                    error => {
+                      if (error) {
+                        throw error;
+                      }
+                      console.log(athlete_id + 'updated in database.');
+                      accessToken = response.data.accessToken;
+                      tokenType = response.data.token_type;
                     }
-                    console.log(athlete_id + 'updated in database.');
-                    accessToken = response.data.accessToken;
-                    tokenType = response.data.token_type;
-                  }
-                );
-              })
-              .catch(function(error) {
-                console.log(error);
-              });
+                  );
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
             }
           }
         )
       );
     });
-    promiseQuery.then(
-      (value) => {
-        // call API on get activity to get activity data
-        const activity_url = 'https://www.strava.com/api/v3/activities/' + activity_id + '?include_all_efforts=false';
-        const headers = {
-          "Authorization": tokenType + ' ' + accessToken
-        }
-        axios.get(activity_url, { headers: headers }).then((response) => {
-          // once activity data is obtained, call logInteraction on LO to save data
-          console.log(response);
-          const logInteractionUrl = 'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json'
-          + '&login_name=' + env.process.LO_API_USER
-          + '&login_pass=' + env.process.LO_API_PASS
-          + '&cons_id=' + consId;
+    promiseQuery.then(value => {
+      // call API on get activity to get activity data
+      const activity_url =
+        'https://www.strava.com/api/v3/activities/' +
+        activity_id +
+        '?include_all_efforts=false';
+      const headers = {
+        Authorization: tokenType + ' ' + accessToken
+      };
+      axios.get(activity_url, { headers: headers }).then(response => {
+        // once activity data is obtained, call logInteraction on LO to save data
+        console.log(response);
+        const logInteractionUrl =
+          'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
+          '&login_name=' +
+          env.process.LO_API_USER +
+          '&login_pass=' +
+          env.process.LO_API_PASS +
+          '&cons_id=' +
+          consId;
 
-          const reqBody = {
-            interaction_subject: "2020_Strava",
-            interaction_body: response,
-            interaction_type_id: '1030'
-          }
-          axios.post(logInteractionUrl, reqBody).then((response) =>{
+        const reqBody = {
+          interaction_subject: '2020_Strava',
+          interaction_body: response,
+          interaction_type_id: '1030'
+        };
+        axios
+          .post(logInteractionUrl, reqBody)
+          .then(response => {
             console.log(response);
-          }).catch((error) => {
-            console.log(error);
           })
-        });
-      }
-    );
+          .catch(error => {
+            console.log(error);
+          });
+      });
+    });
   }
   // TODO: implement other types of webhook aspects from Strava
 };
