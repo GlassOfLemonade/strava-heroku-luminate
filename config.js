@@ -154,17 +154,16 @@ const receiveWebhook = (request, response) => {
             headers: {
               'content-type': 'application/json'
             },
-            data: {
-              interaction_subject: '2020_Strava',
-              interaction_body: JSON.stringify(response.data),
-              interaction_type_id: '1030'
-            },
             httpsAgent: agent,
-            httpsAgent: agent,
-            timeout: 1000
+            httpsAgent: agent
+          };
+          const reqBody = {
+            interaction_subject: '2020_Strava',
+            interaction_body: JSON.stringify(response.data),
+            interaction_type_id: '1030'
           };
           axios
-            .post(logInteractionUrl, config)
+            .post(logInteractionUrl, reqBody, config)
             .then(response => {
               console.log('resp from log interaction call: ');
               console.log(response);
