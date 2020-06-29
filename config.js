@@ -107,7 +107,7 @@ const receiveWebhook = (request, response) => {
                       throw error;
                     }
                     console.log(athlete_id + ' updated in database.');
-                    accessToken = response.data.accessToken;
+                    accessToken = response.data.access_token;
                     tokenType = response.data.token_type;
                     resolve([accessToken, tokenType]);
                     console.log('access token sent: ' + accessToken);
