@@ -59,9 +59,6 @@ const receiveWebhook = (request, response) => {
   response.status(200).end();
   // TODO: do something with the data
   console.log(webhook);
-  let accessToken;
-  let tokenType;
-  let consId;
   if (
     webhook['aspect_type'] === 'create' &&
     webhook['object_type'] === 'activity'
@@ -69,7 +66,9 @@ const receiveWebhook = (request, response) => {
     // if new activity, call strava back with Get Activity
     const athlete_id = webhook['owner_id'];
     const activity_id = webhook['object_id'];
-    // TODO: if token expired then refresh
+    var accessToken;
+    var tokenType;
+    var consId;
     const promiseQuery = new Promise((resolve, reject) => {
       resolve(
         pool.query(
@@ -84,6 +83,7 @@ const receiveWebhook = (request, response) => {
             //console.log(time_now);
             // save cons_id
             consId = results.rows[0]['cons_id'];
+            // if token expired then refresh
             if (time_now > results.rows[0]['expires_at']) {
               // token has expired, call a refresh
               console.log('refreshing token...');
