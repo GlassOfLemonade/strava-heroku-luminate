@@ -68,8 +68,6 @@ app.get('/oauth', oAuth.oAuthHandler);
 /* POST handlers */
 // webhook
 app.post('/webhook', dbConfig.receiveWebhook);
-// oauth
-app.get('/oauth', oAuth.oAuthHandler);
 
 /* PUT handlers */
 
