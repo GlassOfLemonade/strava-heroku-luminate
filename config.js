@@ -81,7 +81,7 @@ const receiveWebhook = (request, response) => {
             }
             console.log(results);
             const time_now = new Date(Date.now()) / 1000; // time in seconds
-            console.log(time_now);
+            //console.log(time_now);
             // save cons_id
             consId = results.rows[0]['cons_id'];
             if (time_now > results.rows[0]['expires_at']) {
@@ -123,6 +123,9 @@ const receiveWebhook = (request, response) => {
                 .catch(function(error) {
                   console.log(error);
                 });
+            } else {
+              tokenType = results.rows[0]['token_type'];
+              accessToken = results.rows[0]['access_token'];
             }
           }
         )
@@ -137,32 +140,37 @@ const receiveWebhook = (request, response) => {
       const headers = {
         Authorization: tokenType + ' ' + accessToken
       };
-      axios.get(activity_url, { headers: headers }).then(response => {
-        // once activity data is obtained, call logInteraction on LO to save data
-        console.log(response);
-        const logInteractionUrl =
-          'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
-          '&login_name=' +
-          env.process.LO_API_USER +
-          '&login_pass=' +
-          env.process.LO_API_PASS +
-          '&cons_id=' +
-          consId;
+      axios
+        .get(activity_url, { headers: headers })
+        .then(response => {
+          // once activity data is obtained, call logInteraction on LO to save data
+          console.log(response);
+          const logInteractionUrl =
+            'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
+            '&login_name=' +
+            env.process.LO_API_USER +
+            '&login_pass=' +
+            env.process.LO_API_PASS +
+            '&cons_id=' +
+            consId;
 
-        const reqBody = {
-          interaction_subject: '2020_Strava',
-          interaction_body: response,
-          interaction_type_id: '1030'
-        };
-        axios
-          .post(logInteractionUrl, reqBody)
-          .then(response => {
-            console.log(response);
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      });
+          const reqBody = {
+            interaction_subject: '2020_Strava',
+            interaction_body: response,
+            interaction_type_id: '1030'
+          };
+          axios
+            .post(logInteractionUrl, reqBody)
+            .then(response => {
+              console.log(response);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        })
+        .catch(error => {
+          console.log(error);
+        });
     });
   }
   // TODO: implement other types of webhook aspects from Strava
