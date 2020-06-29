@@ -138,7 +138,7 @@ const receiveWebhook = (request, response) => {
           // once activity data is obtained, call logInteraction on LO to save data
           //console.log(response);
           const logInteractionUrl =
-            'https://secure2.convio.net/cfrca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
+            'https://secure.conquercancer.ca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
             '&login_name=' +
             process.env.LO_API_USER +
             '&login_pass=' +
