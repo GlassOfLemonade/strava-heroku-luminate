@@ -19,17 +19,6 @@ const pool = new Pool({
  */
 const getActivitiesByCons = (request, response) => {
   const cons_id = parseInt(request.params.cons_id);
-
-  pool.query(
-    'SELECT * FROM activities WHERE cons_id = $1',
-    [cons_id],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-      response.status(200).json(results.rows);
-    }
-  );
 };
 
 /**
@@ -134,7 +123,7 @@ const receiveWebhook = (request, response) => {
     });
     promiseQuery.then(results => {
       // call API on get activity to get activity data
-      //console.log('token type: ' + tokenType);
+      console.log(results);
       console.log('access token: ' + results.accessToken);
       const activity_url =
         'https://www.strava.com/api/v3/activities/' +
