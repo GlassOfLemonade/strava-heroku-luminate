@@ -115,7 +115,7 @@ const receiveWebhook = (request, response) => {
           } else {
             tokenType = results.rows[0]['token_type'];
             accessToken = results.rows[0]['access_token'];
-            console.log('accessToken: ' + accessToken);
+            //console.log('accessToken: ' + accessToken);
             resolve([accessToken, tokenType]);
           }
         }
@@ -123,14 +123,14 @@ const receiveWebhook = (request, response) => {
     });
     promiseQuery.then(results => {
       // call API on get activity to get activity data
-      console.log(results);
-      console.log('access token: ' + results.accessToken);
+      //console.log(results);
+      console.log('access token: ' + results[0]);
       const activity_url =
         'https://www.strava.com/api/v3/activities/' +
         activity_id +
         '?include_all_efforts=false';
       const headers = {
-        Authorization: results.tokenType + ' ' + results.accessToken
+        Authorization: results[1] + ' ' + results[0]
       };
       axios
         .get(activity_url, { headers: headers })
