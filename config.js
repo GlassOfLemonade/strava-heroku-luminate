@@ -59,6 +59,9 @@ const receiveWebhook = (request, response) => {
   response.status(200).end();
   // TODO: do something with the data
   console.log(webhook);
+  let accessToken;
+  let tokenType;
+  let consId;
   if (
     webhook['aspect_type'] === 'create' &&
     webhook['object_type'] === 'activity'
@@ -66,9 +69,6 @@ const receiveWebhook = (request, response) => {
     // if new activity, call strava back with Get Activity
     const athlete_id = webhook['owner_id'];
     const activity_id = webhook['object_id'];
-    let accessToken;
-    let tokenType;
-    let consId;
     // TODO: if token expired then refresh
     const promiseQuery = new Promise((resolve, reject) => {
       resolve(
@@ -79,9 +79,9 @@ const receiveWebhook = (request, response) => {
             if (error) {
               throw error;
             }
-            console.log(results);
+            //console.log(results);
             const time_now = new Date(Date.now()) / 1000; // time in seconds
-            console.log(time_now);
+            //console.log(time_now);
             // save cons_id
             consId = results.rows[0]['cons_id'];
             if (time_now > results.rows[0]['expires_at']) {
@@ -127,19 +127,21 @@ const receiveWebhook = (request, response) => {
               tokenType = results.rows[0]['token_type'];
               accessToken = results.rows[0]['access_token'];
             }
-            console.log('access token: ' + accessToken);
+            //console.log('access token: ' + accessToken);
           }
         )
       );
     });
     promiseQuery.then(value => {
       // call API on get activity to get activity data
+      console.log('token type: ' + tokenType);
+      console.log('access token: ' + accessToken);
       const activity_url =
         'https://www.strava.com/api/v3/activities/' +
         activity_id +
         '?include_all_efforts=false';
       const headers = {
-        Authorization: String(tokenType) + ' ' + String(accessToken)
+        Authorization: tokenType + ' ' + accessToken
       };
       axios
         .get(activity_url, { headers: headers })
