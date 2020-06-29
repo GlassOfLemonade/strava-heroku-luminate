@@ -142,6 +142,15 @@ const receiveWebhook = (request, response) => {
         .then(response => {
           // once activity data is obtained, call logInteraction on LO to save data
           //console.log(response);
+          // carve out a subset of data from response
+          const shortResp = {
+            athlete_id: response.athlete.id,
+            name: response.name,
+            distance: response.distance,
+            moving_time: response['moving_time'],
+            start_date: response['start_date_local'],
+            elevation: response['total_elevation_gain']
+          };
           const logInteractionUrl =
             'https://secure.conquercancer.ca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
             '&login_name=' +
@@ -158,8 +167,8 @@ const receiveWebhook = (request, response) => {
             httpsAgent: agent
           };
           const reqBody = {
-            interaction_subject: '2020_Strava',
-            interaction_body: JSON.stringify(response.data),
+            interaction_subject: 'year=2020 activity_id=' + response.id,
+            interaction_body: JSON.stringify(shortResp),
             interaction_type_id: '1030'
           };
           axios
