@@ -31,35 +31,35 @@ const getActivitiesByCons = (request, response) => {
       status: 'failed',
       message: 'Request must contain a constituent ID.'
     });
+  } else {
+    response.status(200).json({
+      status: 'end reached',
+      message: 'end reached.'
+    });
+
+    const getUserInteractionsUrl =
+      'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
+      '&login_name=' +
+      process.env.LO_API_USER +
+      '&login_password=' +
+      process.env.LO_API_PASS +
+      '&cons_id=' +
+      cons_id +
+      '&interaction_type_id=1030';
+    const config = {
+      httpsAgent: agent,
+      timeOut: 1000
+    };
+    const reqBody = {};
+    // axios
+    //   .post(getUserInteractionsUrl, reqBody, config)
+    //   .then(resp => {
+    //     response.status(200).json(resp);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
   }
-
-  response.status(200).json({
-    status: 'end reached',
-    message: 'end reached.'
-  });
-
-  const getUserInteractionsUrl =
-    'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
-    '&login_name=' +
-    process.env.LO_API_USER +
-    '&login_password=' +
-    process.env.LO_API_PASS +
-    '&cons_id=' +
-    cons_id +
-    '&interaction_type_id=1030';
-  const config = {
-    httpsAgent: agent,
-    timeOut: 1000
-  };
-  const reqBody = {};
-  // axios
-  //   .post(getUserInteractionsUrl, reqBody, config)
-  //   .then(resp => {
-  //     response.status(200).json(resp);
-  //   })
-  //   .catch(error => {
-  //     console.log(error);
-  //   });
 };
 
 /**
