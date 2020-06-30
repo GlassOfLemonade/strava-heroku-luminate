@@ -54,7 +54,7 @@ const getActivitiesByCons = (request, response) => {
     axios
       .post(getUserInteractionsUrl, reqBody, config)
       .then(resp => {
-        response.status(200).json(resp);
+        response.status(200).send(resp);
       })
       .catch(error => {
         console.log(error);
