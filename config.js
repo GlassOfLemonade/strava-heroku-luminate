@@ -23,7 +23,7 @@ const agent = new httpProxyAgent(proxy);
  */
 const getActivitiesByCons = (request, response) => {
   console.log('getting activities...');
-  const cons_id = parseInt(request.params.cons_id);
+  const cons_id = request.query.cons_id;
 
   if (request.params.cons_id === undefined) {
     response.status(200).json({
