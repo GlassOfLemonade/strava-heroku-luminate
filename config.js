@@ -32,10 +32,10 @@ const getActivitiesByCons = (request, response) => {
       message: 'Request must contain a constituent ID.'
     });
   } else {
-    response.status(200).json({
-      status: 'end reached',
-      message: 'end reached.'
-    });
+    // response.status(200).json({
+    //   status: 'end reached',
+    //   message: 'end reached.'
+    // });
 
     const getUserInteractionsUrl =
       'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
@@ -51,14 +51,14 @@ const getActivitiesByCons = (request, response) => {
       timeOut: 1000
     };
     const reqBody = {};
-    // axios
-    //   .post(getUserInteractionsUrl, reqBody, config)
-    //   .then(resp => {
-    //     response.status(200).json(resp);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
+    axios
+      .post(getUserInteractionsUrl, reqBody, config)
+      .then(resp => {
+        response.status(200).json(resp);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 };
 
