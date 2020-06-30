@@ -161,15 +161,15 @@ const receiveWebhook = (request, response) => {
             consId +
             '&interaction_subject=' +
             'year=2020 activity_id=' +
-            response.data.id;
+            response.data.id +
+            '&interaction_body=' +
+            JSON.stringify(shortResp) +
+            '&interaction_type_id=1030';
           const config = {
             httpsAgent: agent,
             timeOut: 1000
           };
-          const reqBody = {
-            interaction_body: JSON.stringify(shortResp),
-            interaction_type_id: '1030'
-          };
+          const reqBody = {};
           axios
             .post(logInteractionUrl, reqBody, config)
             .then(response => {
