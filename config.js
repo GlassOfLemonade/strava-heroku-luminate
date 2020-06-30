@@ -160,9 +160,6 @@ const receiveWebhook = (request, response) => {
             '&cons_id=' +
             consId;
           const config = {
-            headers: {
-              'content-type': 'application/json'
-            },
             httpsAgent: agent,
             httpsAgent: agent
           };
