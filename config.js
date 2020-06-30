@@ -1,7 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const { Pool } = require('pg');
-const httpProxyAgent = require('http-proxy-agent');
+const httpProxyAgent = require('https-proxy-agent');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
