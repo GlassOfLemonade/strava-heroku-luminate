@@ -22,13 +22,42 @@ const agent = new httpProxyAgent(proxy);
  * must have cons_id in URL params
  */
 const getActivitiesByCons = (request, response) => {
+  if (request.params.cons_id === undefined) {
+    response.status(200).json({
+      status: 'failed',
+      message: 'Request must contain a constituent ID.'
+    });
+  }
   const cons_id = parseInt(request.params.cons_id);
+
+  const getUserInteractionsUrl =
+    'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
+    '&login_name=' +
+    process.env.LO_API_USER +
+    '&login_password=' +
+    process.env.LO_API_PASS +
+    '&cons_id=' +
+    cons_id +
+    '&interaction_type_id=1030';
+  const config = {
+    httpsAgent: agent,
+    timeOut: 1000
+  };
+  const reqBody = {};
+  axios
+    .post(getUserInteractionsUrl, reqBody, config)
+    .then(resp => {
+      response.status(200).json(resp);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 };
 
 /**
- * Post Interaction From LO
+ * Get Interactions From LO
  */
-const postInteraction = (request, response) => {
+const getInteractions = (request, response) => {
   const { info } = request.body;
   // TODO: revamp this function to include cons_id from request params
 
@@ -193,7 +222,7 @@ const receiveWebhook = (request, response) => {
 module.exports = {
   isProduction,
   getActivitiesByCons,
-  postInteraction,
+  getInteractions,
   receiveWebhook,
   pool
 };
