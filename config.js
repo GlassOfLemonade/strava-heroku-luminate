@@ -33,7 +33,10 @@ const getActivitiesByCons = (request, response) => {
     });
   }
 
-  response.status(200);
+  response.status(200).json({
+    status: 'end reached',
+    message: 'end reached.'
+  });
 
   const getUserInteractionsUrl =
     'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
