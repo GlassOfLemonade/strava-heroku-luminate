@@ -22,8 +22,9 @@ const agent = new httpProxyAgent(proxy);
  * must have cons_id in URL params
  */
 const getActivitiesByCons = (request, response) => {
-  console.log('getting activities...');
+  //console.log('getting activities...');
   const cons_id = request.query['cons_id'];
+  console.log('consId: ' + cons_id);
 
   if (cons_id === undefined) {
     response.status(200).json({
@@ -31,6 +32,8 @@ const getActivitiesByCons = (request, response) => {
       message: 'Request must contain a constituent ID.'
     });
   }
+
+  response.status(200);
 
   const getUserInteractionsUrl =
     'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
@@ -46,14 +49,14 @@ const getActivitiesByCons = (request, response) => {
     timeOut: 1000
   };
   const reqBody = {};
-  axios
-    .post(getUserInteractionsUrl, reqBody, config)
-    .then(resp => {
-      response.status(200).json(resp);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  // axios
+  //   .post(getUserInteractionsUrl, reqBody, config)
+  //   .then(resp => {
+  //     response.status(200).json(resp);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   });
 };
 
 /**
