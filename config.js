@@ -155,7 +155,7 @@ const receiveWebhook = (request, response) => {
             'https://secure.conquercancer.ca/site/SRConsAPI?method=logInteraction&api_key=cfrca&v=1.0&response_format=json' +
             '&login_name=' +
             process.env.LO_API_USER +
-            '&login_pass=' +
+            '&login_password=' +
             process.env.LO_API_PASS +
             '&cons_id=' +
             consId;
