@@ -40,7 +40,7 @@ app.get('/', (request, response) => {
   response.status(200).json({ info: 'Node.js, Express, and Postgres API' });
 });
 // get activities from database
-app.get('/strava-activities/:cons_id', (request, response) => {
+app.get('/strava-activities', (request, response) => {
   console.log('getting activities...');
   const cons_id = request.query.cons_id;
 
