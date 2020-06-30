@@ -161,7 +161,7 @@ const receiveWebhook = (request, response) => {
             consId;
           const config = {
             httpsAgent: agent,
-            httpsAgent: agent
+            httpAgent: agent
           };
           const reqBody = {
             interaction_subject: 'year=2020 activity_id=' + response.data.id,
