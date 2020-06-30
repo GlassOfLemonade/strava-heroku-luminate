@@ -22,13 +22,15 @@ const agent = new httpProxyAgent(proxy);
  * must have cons_id in URL params
  */
 const getActivitiesByCons = (request, response) => {
+  console.log('getting activities...');
+  const cons_id = parseInt(request.params.cons_id);
+
   if (request.params.cons_id === undefined) {
     response.status(200).json({
       status: 'failed',
       message: 'Request must contain a constituent ID.'
     });
   }
-  const cons_id = parseInt(request.params.cons_id);
 
   const getUserInteractionsUrl =
     'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +

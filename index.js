@@ -37,7 +37,7 @@ app.use(
 /* GET handlers */
 // default
 app.get('/', (request, response) => {
-  response.json({ info: 'Node.js, Express, and Postgres API' });
+  response.status(200).json({ info: 'Node.js, Express, and Postgres API' });
 });
 // get activities from database
 app.get('/strava-activities/:cons_id', dbConfig.getActivitiesByCons);
