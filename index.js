@@ -18,12 +18,27 @@ app.use(
     extended: true
   })
 );
+const whitelist = [
+  'https://cf-strava-luminate.herokuapp.com',
+  'https://secure.conquercancer.ca',
+  'https://ride.conquercancer.ca'
+];
+const corsOptions = {
+  origin: function(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
 app.use(
-  cors({
-    origin: dbConfig.isProduction
-      ? 'https://cf-strava-luminate.herokuapp.com'
-      : '*'
-  })
+  // cors({
+  //   origin: dbConfig.isProduction
+  //     ? 'https://cf-strava-luminate.herokuapp.com'
+  //     : '*'
+  // })
+  cors(corsOptions)
 );
 app.use(compression());
 app.use(helmet());
