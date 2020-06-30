@@ -158,13 +158,15 @@ const receiveWebhook = (request, response) => {
             '&login_password=' +
             process.env.LO_API_PASS +
             '&cons_id=' +
-            consId;
+            consId +
+            '&interaction_subject=' +
+            'year=2020 activity_id=' +
+            response.data.id;
           const config = {
             httpsAgent: agent,
             timeOut: 1000
           };
           const reqBody = {
-            interaction_subject: 'year=2020 activity_id=' + response.data.id,
             interaction_body: JSON.stringify(shortResp),
             interaction_type_id: '1030'
           };
