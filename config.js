@@ -164,7 +164,8 @@ const receiveWebhook = (request, response) => {
             response.data.id +
             '&interaction_body=' +
             JSON.stringify(shortResp) +
-            '&interaction_type_id=1030';
+            '&interaction_type_id=1030' + // strava interaction custom
+            '&interaction_cat_id=1'; // general category
           const config = {
             httpsAgent: agent,
             timeOut: 1000
