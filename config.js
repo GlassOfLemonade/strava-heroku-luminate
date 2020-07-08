@@ -84,7 +84,7 @@ const fetchUser = (request, response) => {
           throw error;
         }
         // throw results back to requester
-        response.status(200).send(results);
+        response.status(200).send(results.rowCount);
       }
     );
   }
