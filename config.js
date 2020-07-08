@@ -64,6 +64,33 @@ const getActivitiesByCons = (request, response) => {
 };
 
 /**
+ * Get call for verifying a database user
+ */
+const fetchUser = (request, response) => {
+  const cons_id = request.query['cons_id'];
+  // console.log('consId: ' + cons_id);
+  if (cons_id === undefined) {
+    response.status(200).json({
+      status: 'failed',
+      message: 'Request must contain a constituent ID.'
+    });
+  } else {
+    // query for cons_id, and return rows
+    pool.query(
+      'SELECT * FROM users WHERE cons_id::integer = $1',
+      [cons_id],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        // throw results back to requester
+        response.status(200).send(results);
+      }
+    );
+  }
+};
+
+/**
  * Get Interactions From LO
  */
 const getInteractions = (request, response) => {
@@ -233,5 +260,6 @@ module.exports = {
   getActivitiesByCons,
   getInteractions,
   receiveWebhook,
+  fetchUser,
   pool
 };

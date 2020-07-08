@@ -56,6 +56,8 @@ app.get('/', (request, response) => {
 });
 // get activities from database
 app.get('/strava-activities', dbConfig.getActivitiesByCons);
+// fetch user
+app.get('/fetch-user', dbConfig.fetchUser);
 // get handler for webhook to verify with strava
 app.get('/webhook', (req, res) => {
   // Your verify token. Should be a random string.
