@@ -152,6 +152,7 @@ const getActivityStats = (request, response) => {
           throw error;
         }
         // store strava id
+        console.log(results);
         this.strava_id = results[0].strava_id;
         console.log('strava ID: ' + strava_id);
       }
