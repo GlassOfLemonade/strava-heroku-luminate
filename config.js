@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const { Pool } = require('pg');
+const oAuth = require('./oauth');
 const httpProxyAgent = require('https-proxy-agent');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -24,7 +25,7 @@ const agent = new httpProxyAgent(proxy);
 const getActivitiesByCons = (request, response) => {
   //console.log('getting activities...');
   const cons_id = request.query['cons_id'];
-  console.log('consId: ' + cons_id);
+  // console.log('consId: ' + cons_id);
 
   if (cons_id === undefined) {
     response.status(200).json({
@@ -60,6 +61,60 @@ const getActivitiesByCons = (request, response) => {
       .catch(error => {
         console.log(error);
       });
+  }
+};
+
+/**
+ * Get Activity Stats from Strava
+ * @param {request must contain cons_id parameter} request
+ * @param {response returns Strava's Activity Stat object type} response
+ */
+const getActivityStats = (request, response) => {
+  const cons_id = request.query['cons_id'];
+  // console.log('consId: ' + cons_id);
+  let strava_id;
+  if (cons_id === undefined) {
+    response.status(200).json({
+      status: 'failed',
+      message: 'Request must contain a constituent ID.'
+    });
+  } else {
+    pool.query(
+      'SELECT * FROM users WHERE cons_id::integer = $1',
+      [cons_id],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        // store strava id
+        this.strava_id = results[0].strava_id;
+      }
+    );
+
+    console.log('strava ID: ' + strava_id);
+    // handle auth
+    const tokenCheck = oAuth.refreshToken;
+    tokenCheck.then(results => {
+      // send axios call to Strava to retrieve activity stats
+      const athlete_url =
+        'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
+      const headers = {
+        Authorization: results[1] + ' ' + results[0]
+      };
+      axios
+        .get(athlete_url, { headers: headers })
+        .then(response => {
+          console.log(response);
+          // send response back to requester
+          response.status(200).send(response);
+        })
+        .catch(error => {
+          console.log(error);
+          response.status(403).json({
+            message: 'there was an error processing this request'
+          });
+        });
+    });
   }
 };
 
@@ -198,7 +253,7 @@ const receiveWebhook = (request, response) => {
     promiseQuery.then(results => {
       // call API on get activity to get activity data
       //console.log(results);
-      console.log('access token received: ' + results[0]);
+      // console.log('access token received: ' + results[0]);
       const activity_url =
         'https://www.strava.com/api/v3/activities/' +
         activity_id +
@@ -262,6 +317,7 @@ const receiveWebhook = (request, response) => {
 module.exports = {
   isProduction,
   getActivitiesByCons,
+  getActivityStats,
   getInteractions,
   receiveWebhook,
   fetchUser,

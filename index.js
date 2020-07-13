@@ -54,8 +54,10 @@ app.use(
 app.get('/', (request, response) => {
   response.status(200).json({ info: 'Node.js, Express, and Postgres API' });
 });
-// get activities from database
+// get activities from LO interactions
 app.get('/strava-activities', dbConfig.getActivitiesByCons);
+// get activities stats from Strava
+app.get('/strava-activity-stats', dbConfig.getActivityStats);
 // fetch user
 app.get('/fetch-user', dbConfig.fetchUser);
 // get handler for webhook to verify with strava
