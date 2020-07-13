@@ -157,8 +157,8 @@ const getActivityStats = (request, response) => {
       };
       axios
         .get(athlete_url, { headers: headers })
-        .then(response => {
-          console.log(response);
+        .then(results => {
+          // console.log(results);
           // send response back to requester
           response.status(200).send(response);
         })
