@@ -152,11 +152,10 @@ const getActivityStats = (request, response) => {
           throw error;
         }
         // store strava id
-        this.strava_id = results[0].strava_id;
+        strava_id = results[0].strava_id;
+        console.log('strava ID: ' + strava_id);
       }
     );
-
-    console.log('strava ID: ' + strava_id);
     // handle auth
     const tokenCheck = refreshToken;
     tokenCheck.then(results => {
