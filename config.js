@@ -16,71 +16,6 @@ const pool = new Pool({
 const proxy = process.env.QUOTAGUARDSHIELD_URL;
 const agent = new httpProxyAgent(proxy);
 
-const refreshToken = new Promise((resolve, reject) => {
-  pool.query(
-    'SELECT * FROM users WHERE strava_id = $1',
-    [athlete_id],
-    (error, results) => {
-      if (error) {
-        reject(error);
-      }
-      //console.log(results);
-      const time_now = new Date(Date.now()) / 1000; // time in seconds
-      //console.log(time_now);
-      // save cons_id
-      consId = results.rows[0]['cons_id'];
-      // if token expired then refresh
-      if (time_now > results.rows[0]['expires_at']) {
-        // token has expired, call a refresh
-        console.log('refreshing token...');
-        const tokenReUrl =
-          'https://www.strava.com/api/v3/oauth/token?' +
-          'client_id=' +
-          process.env.CLIENT_ID +
-          '&' +
-          'client_secret=' +
-          process.env.CLIENT_SECRET +
-          '&' +
-          'grant_type=refresh_token' +
-          '&' +
-          'refresh_token=' +
-          results.rows[0]['refresh_token'];
-        axios
-          .post(tokenReUrl)
-          .then(function(response) {
-            pool.query(
-              'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
-              [
-                response.data.token_type,
-                response.data.refresh_token,
-                response.data.access_token,
-                response.data.expires_at
-              ],
-              error => {
-                if (error) {
-                  throw error;
-                }
-                console.log(athlete_id + ' updated in database.');
-                accessToken = response.data.access_token;
-                tokenType = response.data.token_type;
-                resolve([accessToken, tokenType]);
-                console.log('access token sent: ' + accessToken);
-              }
-            );
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
-      } else {
-        tokenType = results.rows[0]['token_type'];
-        accessToken = results.rows[0]['access_token'];
-        //console.log('accessToken: ' + accessToken);
-        resolve([accessToken, tokenType]);
-      }
-    }
-  );
-});
-
 /* Query Functions */
 
 /**
@@ -137,49 +72,103 @@ const getActivitiesByCons = (request, response) => {
 const getActivityStats = (request, response) => {
   const cons_id = request.query['cons_id'];
   // console.log('consId: ' + cons_id);
-  let strava_id;
   if (cons_id === undefined) {
     response.status(200).json({
       status: 'failed',
       message: 'Request must contain a constituent ID.'
     });
   } else {
-    pool.query(
-      'SELECT * FROM users WHERE cons_id::integer = $1',
-      [cons_id],
-      (error, results) => {
-        if (error) {
-          throw error;
+    var accessToken;
+    var tokenType;
+    var stravaId;
+    const refreshToken = new Promise((resolve, reject) => {
+      pool.query(
+        'SELECT * FROM users WHERE cons_id = $1',
+        [cons_id],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+          //console.log(results);
+          const time_now = new Date(Date.now()) / 1000; // time in seconds
+          //console.log(time_now);
+          // save cons_id
+          consId = results.rows[0]['cons_id'];
+          // if token expired then refresh
+          if (time_now > results.rows[0]['expires_at']) {
+            // token has expired, call a refresh
+            console.log('refreshing token...');
+            const tokenReUrl =
+              'https://www.strava.com/api/v3/oauth/token?' +
+              'client_id=' +
+              process.env.CLIENT_ID +
+              '&' +
+              'client_secret=' +
+              process.env.CLIENT_SECRET +
+              '&' +
+              'grant_type=refresh_token' +
+              '&' +
+              'refresh_token=' +
+              results.rows[0]['refresh_token'];
+            axios
+              .post(tokenReUrl)
+              .then(function(response) {
+                pool.query(
+                  'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
+                  [
+                    response.data.token_type,
+                    response.data.refresh_token,
+                    response.data.access_token,
+                    response.data.expires_at
+                  ],
+                  error => {
+                    if (error) {
+                      throw error;
+                    }
+                    console.log(cons_id + ' updated in database.');
+                    accessToken = response.data.access_token;
+                    tokenType = response.data.token_type;
+                    stravaId = results.rows[0]['strava_id'];
+                    resolve([accessToken, tokenType, stravaId]);
+                    console.log('access token sent: ' + accessToken);
+                  }
+                );
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          } else {
+            tokenType = results.rows[0]['token_type'];
+            accessToken = results.rows[0]['access_token'];
+            stravaId = results.rows[0]['strava_id'];
+            //console.log('accessToken: ' + accessToken);
+            resolve([accessToken, tokenType, stravaId]);
+          }
         }
-        // store strava id
-        console.log(results);
-        this.strava_id = results[0].strava_id;
-        console.log('strava ID: ' + strava_id);
-      }
-    );
-    // handle auth
-    // const tokenCheck = refreshToken;
-    // tokenCheck.then(results => {
-    //   // send axios call to Strava to retrieve activity stats
-    //   const athlete_url =
-    //     'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
-    //   const headers = {
-    //     Authorization: results[1] + ' ' + results[0]
-    //   };
-    //   axios
-    //     .get(athlete_url, { headers: headers })
-    //     .then(response => {
-    //       console.log(response);
-    //       // send response back to requester
-    //       response.status(200).send(response);
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //       response.status(403).json({
-    //         message: 'there was an error processing this request'
-    //       });
-    //     });
-    // });
+      );
+    });
+    refreshToken.then(results => {
+      var strava_id = results[2];
+      // send axios call to Strava to retrieve activity stats
+      const athlete_url =
+        'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
+      const headers = {
+        Authorization: results[1] + ' ' + results[0]
+      };
+      axios
+        .get(athlete_url, { headers: headers })
+        .then(response => {
+          console.log(response);
+          // send response back to requester
+          response.status(200).send(response);
+        })
+        .catch(error => {
+          console.log(error);
+          response.status(403).json({
+            message: 'there was an error processing this request'
+          });
+        });
+    });
   }
 };
 
