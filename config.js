@@ -158,28 +158,28 @@ const getActivityStats = (request, response) => {
       }
     );
     // handle auth
-    const tokenCheck = refreshToken;
-    tokenCheck.then(results => {
-      // send axios call to Strava to retrieve activity stats
-      const athlete_url =
-        'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
-      const headers = {
-        Authorization: results[1] + ' ' + results[0]
-      };
-      axios
-        .get(athlete_url, { headers: headers })
-        .then(response => {
-          console.log(response);
-          // send response back to requester
-          response.status(200).send(response);
-        })
-        .catch(error => {
-          console.log(error);
-          response.status(403).json({
-            message: 'there was an error processing this request'
-          });
-        });
-    });
+    // const tokenCheck = refreshToken;
+    // tokenCheck.then(results => {
+    //   // send axios call to Strava to retrieve activity stats
+    //   const athlete_url =
+    //     'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
+    //   const headers = {
+    //     Authorization: results[1] + ' ' + results[0]
+    //   };
+    //   axios
+    //     .get(athlete_url, { headers: headers })
+    //     .then(response => {
+    //       console.log(response);
+    //       // send response back to requester
+    //       response.status(200).send(response);
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //       response.status(403).json({
+    //         message: 'there was an error processing this request'
+    //       });
+    //     });
+    // });
   }
 };
 
