@@ -160,7 +160,7 @@ const getActivityStats = (request, response) => {
         .then(results => {
           // console.log(results);
           // send response back to requester
-          response.status(200).send(response);
+          response.status(200).send(results);
         })
         .catch(error => {
           console.log(error);
