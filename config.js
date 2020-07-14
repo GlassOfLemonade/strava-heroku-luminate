@@ -82,89 +82,103 @@ const getActivityStats = (request, response) => {
         [cons_id],
         (error, results) => {
           if (error) {
-            reject(error);
-          }
-          //console.log(results);
-          const time_now = new Date(Date.now()) / 1000; // time in seconds
-          //console.log(time_now);
-          // save cons_id
-          consId = results.rows[0]['cons_id'];
-          // if token expired then refresh
-          if (time_now > results.rows[0]['expires_at']) {
-            // token has expired, call a refresh
-            console.log('refreshing token...');
-            const tokenReUrl =
-              'https://www.strava.com/api/v3/oauth/token?' +
-              'client_id=' +
-              process.env.CLIENT_ID +
-              '&' +
-              'client_secret=' +
-              process.env.CLIENT_SECRET +
-              '&' +
-              'grant_type=refresh_token' +
-              '&' +
-              'refresh_token=' +
-              results.rows[0]['refresh_token'];
-            axios
-              .post(tokenReUrl)
-              .then(function(response) {
-                pool.query(
-                  'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
-                  [
-                    response.data.token_type,
-                    response.data.refresh_token,
-                    response.data.access_token,
-                    response.data.expires_at
-                  ],
-                  error => {
-                    if (error) {
-                      throw error;
-                    }
-                    console.log(cons_id + ' updated in database.');
-                    accessToken = response.data.access_token;
-                    tokenType = response.data.token_type;
-                    stravaId = results.rows[0]['strava_id'];
-                    resolve([accessToken, tokenType, stravaId]);
-                    console.log('access token sent: ' + accessToken);
-                  }
-                );
-              })
-              .catch(function(error) {
-                console.log(error);
-              });
+            throw error;
+          } else if (results.rowCount === 0) {
+            // user not found
+            var rejectionVar = results.rowCount;
+            reject([rejectionVar]);
           } else {
-            tokenType = results.rows[0]['token_type'];
-            accessToken = results.rows[0]['access_token'];
-            stravaId = results.rows[0]['strava_id'];
-            //console.log('accessToken: ' + accessToken);
-            resolve([accessToken, tokenType, stravaId]);
+            // console.log(results.rowCount);
+            const time_now = new Date(Date.now()) / 1000; // time in seconds
+            //console.log(time_now);
+            // save cons_id
+            consId = results.rows[0]['cons_id'];
+            // if token expired then refresh
+            if (time_now > results.rows[0]['expires_at']) {
+              // token has expired, call a refresh
+              console.log('refreshing token...');
+              const tokenReUrl =
+                'https://www.strava.com/api/v3/oauth/token?' +
+                'client_id=' +
+                process.env.CLIENT_ID +
+                '&' +
+                'client_secret=' +
+                process.env.CLIENT_SECRET +
+                '&' +
+                'grant_type=refresh_token' +
+                '&' +
+                'refresh_token=' +
+                results.rows[0]['refresh_token'];
+              axios
+                .post(tokenReUrl)
+                .then(function(response) {
+                  pool.query(
+                    'UPDATE users SET token_type = $1, refresh_token = $2, access_token = $3, expires_at = $4',
+                    [
+                      response.data.token_type,
+                      response.data.refresh_token,
+                      response.data.access_token,
+                      response.data.expires_at
+                    ],
+                    error => {
+                      if (error) {
+                        throw error;
+                      }
+                      console.log(cons_id + ' updated in database.');
+                      accessToken = response.data.access_token;
+                      tokenType = response.data.token_type;
+                      stravaId = results.rows[0]['strava_id'];
+                      resolve([accessToken, tokenType, stravaId]);
+                      console.log('access token sent: ' + accessToken);
+                    }
+                  );
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            } else {
+              tokenType = results.rows[0]['token_type'];
+              accessToken = results.rows[0]['access_token'];
+              stravaId = results.rows[0]['strava_id'];
+              //console.log('accessToken: ' + accessToken);
+              resolve([accessToken, tokenType, stravaId]);
+            }
           }
         }
       );
     });
-    refreshToken.then(results => {
-      var strava_id = results[2];
-      // send axios call to Strava to retrieve activity stats
-      const athlete_url =
-        'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
-      const headers = {
-        Authorization: results[1] + ' ' + results[0]
-      };
-      axios
-        .get(athlete_url, { headers: headers })
-        .then(results => {
-          console.log(results.data);
-          let data = results.data;
-          // send response back to requester
-          response.status(200).json(data);
-        })
-        .catch(error => {
-          console.log(error);
-          response.status(403).json({
-            message: 'there was an error processing this request'
+    refreshToken.then(
+      results => {
+        var strava_id = results[2];
+        // send axios call to Strava to retrieve activity stats
+        const athlete_url =
+          'https://www.strava.com/api/v3/athletes/' + strava_id + '/stats/';
+        const headers = {
+          Authorization: results[1] + ' ' + results[0]
+        };
+        axios
+          .get(athlete_url, { headers: headers })
+          .then(results => {
+            console.log(results.data);
+            let data = results.data;
+            // send response back to requester
+            response.status(200).json(data);
+          })
+          .catch(error => {
+            console.log(error);
+            response.status(403).json({
+              message: 'there was an error processing this request'
+            });
           });
+      },
+      rejectionVar => {
+        // return row count of 0 back to requester
+        response.status(200).json({
+          message: 'user does not exist',
+          rowCount: rejectionVar[0]
         });
-    });
+      }
+    );
   }
 };
 
