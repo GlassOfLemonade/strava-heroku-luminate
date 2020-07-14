@@ -153,9 +153,10 @@ const getActivityStats = (request, response) => {
       axios
         .get(athlete_url, { headers: headers })
         .then(results => {
-          console.log(results);
+          console.log(results.data);
+          let data = results.data;
           // send response back to requester
-          response.status(200).json(results);
+          response.status(200).json(data);
         })
         .catch(error => {
           console.log(error);
