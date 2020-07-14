@@ -33,11 +33,6 @@ const getActivitiesByCons = (request, response) => {
       message: 'Request must contain a constituent ID.'
     });
   } else {
-    // response.status(200).json({
-    //   status: 'end reached',
-    //   message: 'end reached.'
-    // });
-
     const getUserInteractionsUrl =
       'https://secure.conquercancer.ca/site/SRConsAPI?method=getUserInteractions&api_key=cfrca&v=1.0&response_format=json' +
       '&login_name=' +
@@ -158,7 +153,7 @@ const getActivityStats = (request, response) => {
       axios
         .get(athlete_url, { headers: headers })
         .then(results => {
-          // console.log(results);
+          console.log(results);
           // send response back to requester
           response.status(200).json(results);
         })
