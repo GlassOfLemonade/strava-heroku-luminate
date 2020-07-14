@@ -58,6 +58,8 @@ app.get('/', (request, response) => {
 app.get('/strava-activities', dbConfig.getActivitiesByCons);
 // get activities stats from Strava
 app.get('/strava-activity-stats', dbConfig.getActivityStats);
+// get list of past activities from [insert date]
+app.get('/strava-activities-list', dbConfig.);
 // fetch user
 app.get('/fetch-user', dbConfig.fetchUser);
 // get handler for webhook to verify with strava

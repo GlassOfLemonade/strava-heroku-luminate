@@ -169,6 +169,20 @@ const getActivityStats = (request, response) => {
 };
 
 /**
+ * A one-off function to call after webhook subscription is established
+ * this should return a list of history activities from [startDate]
+ * @param {request should contain no params} request
+ * @param {response should be an array of activities} response
+ */
+const getActivitiesList = (request, response) => {
+  const startDate = 'placeholder';
+  response.status(200).json({
+    status: 'under construction',
+    message: 'this functionality is still being built.'
+  });
+};
+
+/**
  * Get call for verifying a database user
  */
 const fetchUser = (request, response) => {

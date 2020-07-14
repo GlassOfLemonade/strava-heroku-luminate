@@ -22,24 +22,28 @@ const oAuthHandler = (request, response) => {
     'grant_type=authorization_code';
   axios
     .post(tokenExUrl)
-    .then(function(response) {
+    .then(function(results) {
       // make entry to database user table
-      //console.log(response);
+      //console.log(results);
       dbConfig.pool.query(
         'INSERT INTO users (cons_id, strava_id, token_type, refresh_token, access_token, expires_at) VALUES ($1, $2, $3, $4, $5, $6)',
         [
           cons_id,
-          response.data.athlete.id,
-          response.data.token_type,
-          response.data.refresh_token,
-          response.data.access_token,
-          response.data.expires_at
+          results.data.athlete.id,
+          results.data.token_type,
+          results.data.refresh_token,
+          results.data.access_token,
+          results.data.expires_at
         ],
         error => {
           if (error) {
             throw error;
           }
           console.log('user added to database.');
+          response.send(200).json({
+            status: 'success!',
+            message: 'successfully integrated! please close this window.'
+          });
         }
       );
     })
