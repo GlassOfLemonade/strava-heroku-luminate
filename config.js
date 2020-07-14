@@ -382,6 +382,7 @@ module.exports = {
   isProduction,
   getActivitiesByCons,
   getActivityStats,
+  getActivitiesList,
   getInteractions,
   receiveWebhook,
   fetchUser,
