@@ -129,7 +129,7 @@ const getActivityStats = (request, response) => {
                       tokenType = response.data.token_type;
                       stravaId = results.rows[0]['strava_id'];
                       resolve([accessToken, tokenType, stravaId]);
-                      console.log('access token sent: ' + accessToken);
+                      // console.log('access token sent: ' + accessToken);
                     }
                   );
                 })
@@ -159,7 +159,7 @@ const getActivityStats = (request, response) => {
         axios
           .get(athlete_url, { headers: headers })
           .then(results => {
-            console.log(results.data);
+            // console.log(results.data);
             let data = results.data;
             // send response back to requester
             response.status(200).json(data);
@@ -185,6 +185,8 @@ const getActivityStats = (request, response) => {
 /**
  * A one-off function to call after webhook subscription is established
  * this should return a list of history activities from [startDate]
+ * we'll then log an interaction for each of these activities
+ * for a starting point
  * @param {request should contain no params} request
  * @param {response should be an array of activities} response
  */

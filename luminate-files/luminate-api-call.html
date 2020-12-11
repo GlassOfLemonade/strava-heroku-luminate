@@ -1,0 +1,144 @@
+<style>
+  /* custom styles for team page with strava tab */
+  .pt_teams_tabs li {
+    width: 33.3%;
+  }
+
+  p.list_view_more_button {
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid #000000;
+    padding: 20px 60px;
+    text-align: center;
+  }
+  #pt_tab_strava div.strava-participant-name,
+  #pt_tab_strava div.strava-participant-stats,
+  #pt_tab_strava div.strava-participant-stats-flex {
+    font-weight: bold;
+    font-size: 22px;
+    display: inline-block;
+    float: none;
+    vertical-align: middle;
+    line-height: 70px;
+  }
+  #pt_tab_strava div.strava-participant-name {
+    width: 33%;
+    border-right: 1px solid #d9d9d9;
+    margin-right: 5%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #pt_tab_strava div.strava-participant-stats {
+    width: 15%;
+    text-align: left;
+    overflow: hidden;
+  }
+  #pt_tab_strava div.strava-participant-stats-flex {
+    width: 15%;
+    text-align: left;
+    overflow: hidden;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: inline-flex;
+    flex-direction: row;
+    -webkit-box-orient: horizontal;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  #pt_tab_strava div.indicator-container {
+    border: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    padding: 30px;
+    font-family: "Futura LT Pro Book", sans-serif;
+    font-size: 16px;
+  }
+</style>
+<script>
+  $(document).ready(function() {
+    // html block for leaderboard to replace placeholder
+    var div = document.createElement("div");
+    div.classList.add("pt_strava_stat_container");
+    div.classList.add("indicator-container");
+    var headerRow = document.createElement("div");
+    headerRow.classList.add("pt_team_member_header");
+    headerRow.classList.add("clearfix");
+    var headerName = document.createElement("div");
+    headerName.classList.add("strava-participant-name");
+    headerName.innerHTML = "Participant Name";
+    var headerStats = document.createElement("div");
+    headerStats.classList.add("strava-participant-stats");
+    headerStats.innerHTML = "Strava Stats";
+    headerRow.appendChild(headerName);
+    headerRow.appendChild(headerStats);
+    div.appendChild(headerRow);
+    $("#pt_tab_strava").append(div);
+    // api call to luminate api to return team cons ids
+    var convioUrl = "https://secure.conquercancer.ca/site/";
+    var convioServlet = "CRTeamraiserAPI?";
+    var convioMethod = "method=getTeamMembers&";
+    var fr_id = [[(S334: fr_id)]];
+    var team_id = [[(S334: team_id)]];
+
+    jQuery.getJSON(
+      convioUrl +
+        convioServlet +
+        convioMethod +
+        "api_key=cfrca&v=1.0&response_format=json&fr_id=" +
+        fr_id +
+        "&team_id=" +
+        team_id,
+      function(data) {
+        console.log(data);
+        if (Array.isArray(data.getTeamMembersResponse.member)) {
+          // multiple members in team
+          // api call to heroku for each member in team
+        } else {
+          // only 1 member in team
+          // api call to heroku
+          var cons_id = data.getTeamMembersResponse.member.consId;
+          var stravaUrl =
+            "https://cf-strava-luminate.herokuapp.com/strava-activity-stats?" +
+            "cons_id=" +
+            cons_id;
+
+          $.getJSON(stravaUrl, function(response) {
+            // console.log(response);
+            var divRow = document.createElement("div");
+            divRow.classList.add("strava-participant-row");
+            divRow.classList.add("clearfix");
+            var divName = document.createElement("div");
+            divName.classList.add("strava-participant-name");
+            var divStats = document.createElement("div");
+            divStats.classList.add("strava-participant-stats-flex");
+
+            // insert stats into html containers
+            divName.innerHTML =
+              "<p>" +
+              data.getTeamMembersResponse.member.name.first +
+              " " +
+              data.getTeamMembersResponse.member.name.last +
+              "</p>";
+            divStats.innerHTML =
+              "<p>Distance Ridden: " +
+              response.recent_ride_totals.distance +
+              "</p>" +
+              "<p>Time Ridden: " +
+              response.recent_ride_totals.elapsed_time +
+              "</p>";
+
+            // insert html containers
+            divRow.appendChild(divName);
+            divRow.appendChild(divStats);
+            $(".pt_strava_stat_container").append(divRow);
+          });
+        }
+      }
+    );
+    // api call to heroku to return month data
+  });
+</script>

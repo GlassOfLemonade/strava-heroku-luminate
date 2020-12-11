@@ -1,0 +1,71 @@
+<script>
+  $(document).ready(function() {
+    // html block
+    var stravaBlock =
+      '<div class="col-md-10 col-md-offset-1"><h2 class="pt_badges_header">STRAVA ACTIVITIES</h2><div id="pt_strava_activities_container" class="row text-center"></div></div>';
+    // append html block to html
+    var badgesRow = $(".pt_badges_row").children(".col-md-10");
+    $(stravaBlock).insertBefore(badgesRow);
+    // consId
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var cons_id = url.searchParams.get("px");
+    // console.log(cons_id);
+    var monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    var stravaActivitiesUrl =
+      "https://cf-strava-luminate.herokuapp.com/strava-activities?" +
+      "cons_id=" +
+      cons_id;
+    $.getJSON(stravaActivitiesUrl, function(response) {
+      //for each interaction in the array, build an html div that holds it
+      response.getUserInteractionsResponse.interaction.forEach(element => {
+        var stravaData = element.note.text;
+        var parsedData = JSON.parse(stravaData.replace(/&quot;/g, '"'));
+        console.log(parsedData);
+        // holder
+        var div = document.createElement("div");
+        div.classList.add("strava-activity-box");
+        // parts
+        var date = document.createElement("div");
+        var name = document.createElement("div");
+        var data = document.createElement("div");
+        date.classList.add("strava-activity-date");
+        name.classList.add("strava-activity-name");
+        data.classList.add("strava-activity-data");
+        var dateStr = new Date(parsedData.start_date);
+        date.innerHTML +=
+          "<p><strong>Date:</strong> " +
+          monthNames[dateStr.getMonth() + 1] +
+          " " +
+          dateStr.getDay() +
+          "</p>";
+        name.innerHTML += "<h3>" + parsedData.name + "</h3>";
+        data.innerHTML +=
+          "<div><strong>Distance:</strong><p>" +
+          parsedData.distance +
+          "</p></div>";
+        data.innerHTML +=
+          "<div><strong>Elevation:</strong><p>" + parsedData.elevation + "</p>";
+        data.innerHTML +=
+          "<div><strong>Time:</strong><p>" + parsedData.moving_time + "</p>";
+        div.appendChild(date);
+        div.appendChild(name);
+        div.appendChild(data);
+        $("#pt_strava_activities_container").append(div);
+      });
+    });
+  });
+</script>
